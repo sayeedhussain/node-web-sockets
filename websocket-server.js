@@ -1,15 +1,21 @@
 // server.js
- 
-const WebSocket = require('ws') 
+
+const WebSocket = require('ws')
 const wss = new WebSocket.Server({ port: 8080 })
 const clients = new Map();
 
-setInterval(function() {  
-  for (var connectionId in clients) {
+setInterval(function () {
+  console.log("attempting to send data ...");
+  var i = 0;
+  for (const connectionId in clients) {
     websocket = clients[connectionId];
     websocket.send(getData());
+    i++;
   }
-}, (1 * 2 * 1000));  
+  if (i > 0) {
+    console.log("data sent to connected clients");
+  }
+}, (1 * 2 * 1000));
 
 const getUniqueID = () => {
   const s4 = () => Math.floor((1 + Math.random()) * 0x10000).toString(16).substring(1);
@@ -27,16 +33,16 @@ wss.on('connection', websocket => {
 
 function getData() {
   var date = new Date();
-  var data = 
-    {
-      "TimeStamp": date.toISOString(),
-      "Value": getCurrentValue(),
-      "Message": "mA",
-      "PinId": getPinId(),
-      "NSamples": 0,
-      "ChargeValue": getChargeValue(),
-      "ConcreteStatus": "High",
-      "Voltage": getVoltageValue()
+  var data =
+  {
+    "TimeStamp": date.toISOString(),
+    "Value": getCurrentValue(),
+    "Message": "mA",
+    "PinId": getPinId(),
+    "NSamples": 0,
+    "ChargeValue": getChargeValue(),
+    "ConcreteStatus": "High",
+    "Voltage": getVoltageValue()
   }
   return JSON.stringify(data);
 }
